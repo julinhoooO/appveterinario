@@ -1,15 +1,31 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import React, {useCallback} from 'react';
+import {connect, useDispatch} from 'react-redux';
+import {useFocusEffect} from '@react-navigation/native';
 
-// import { Container } from './styles';
+import {Container, ListContainer, ListItem, ListIcon} from './styles';
+import SearchHeader from '~/components/searchHeader';
+import * as NavigationActions from '~/store/actions/navigation.actions';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default function main({navigation}) {
+  const dispatch = useDispatch();
+  useFocusEffect(
+    useCallback(() => {
+      dispatch({type: NavigationActions.STACK_MAIN_FOCUSED});
+    }, []),
+  );
   return (
-    <View>
-        <Text>configurações</Text>
-        <TouchableOpacity onPress={() => {navigation.navigate("Login")}}>
-          <Text>Sair</Text>
-        </TouchableOpacity>
-    </View>
+    <Container>
+      <ListContainer>
+        <ListItem
+          title="Sair"
+          left={props => <ListIcon {...props} icon="logout" />}
+          onPress={() => {
+            AsyncStorage.removeItem('token');
+            navigation.navigate('Login');
+          }}
+        />
+      </ListContainer>
+    </Container>
   );
 }
