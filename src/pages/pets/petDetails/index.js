@@ -21,6 +21,7 @@ import {Backdrop} from 'react-native-backdrop';
 
 //BackdropContent
 import BottomSheetMenuContent from '~/components/BottomSheetContent/Vaccines/Menu';
+import BottomSheetVaccinesFormContent from '~/components/BottomSheetContent/Vaccines/Form';
 import BottomSheetObservationContent from '~/components/BottomSheetContent/Appointment/Observation';
 
 import * as NavigationActions from '~/store/actions/navigation.actions';
@@ -70,6 +71,7 @@ export default function details({route, navigation}) {
   const [activeVaccine, setActiveVaccine] = useState(null);
   const [vaccinesSelected, setVaccinesSeleted] = useState([]);
   const [activeAppointment, setActiveAppointment] = useState(null);
+  const [vaccineObs, setVaccineObs] = useState('');
   const handleBackdrop = (backdropType = 'menu') => {
     setBackdropType(backdropType);
     setBackdropVisible(!backdropVisible);
@@ -192,6 +194,13 @@ export default function details({route, navigation}) {
               });
             },
             title: 'Agendar Consulta',
+            icon: 'calendar-plus',
+          },
+          {
+            onPress: () => {
+              handleBackdrop('scheduleVaccine')
+            },
+            title: 'Agendar Vacinação',
             icon: 'calendar-plus',
           },
         ]}
@@ -357,7 +366,9 @@ export default function details({route, navigation}) {
                     title={`${item.date
                       .split('-')
                       .reverse()
-                      .join('/')} ${item.vaccines}`}
+                      .join('/')} ${item.vaccines.slice(0, -1)}`}
+                    description={item.obs ? item.obs : ''}
+                    descriptionNumberOfLines={1000}
                     left={props => (
                       <InfoIcon {...props} icon="calendar-outline" />
                     )}
@@ -407,7 +418,7 @@ export default function details({route, navigation}) {
               </SectionTitle>
               <>
                 {pet.pet_appointments
-                  .filter(item => !item.completed)
+                  .filter(item => !item.completed && item.type_id === 'appointment')
                   .map(item => (
                     <InfoAppointmentItem
                       key={item.id}
@@ -415,6 +426,26 @@ export default function details({route, navigation}) {
                         .split('-')
                         .reverse()
                         .join('/')} ${item.time}`}
+                      left={props => (
+                        <InfoIcon {...props} icon="calendar-outline" />
+                      )}
+                    />
+                  ))}
+              </>
+              <SectionTitle paddingBottom={15} paddingTop={15}>
+                Vacinas Agendadas
+              </SectionTitle>
+              <>
+                {pet.pet_appointments
+                  .filter(item => !item.completed && item.type_id === 'vaccine')
+                  .map(item => (
+                    <InfoAppointmentItem
+                      key={item.id}
+                      title={`${item.date
+                        .split('-')
+                        .reverse()
+                        .join('/')} ${item.time}`}
+                      description={item.vaccines.slice(0, -1)}
                       left={props => (
                         <InfoIcon {...props} icon="calendar-outline" />
                       )}
@@ -540,6 +571,12 @@ export default function details({route, navigation}) {
                   />
                 ))}
             </Select>
+            <FormTextInput
+              label="Observação"
+              mode="flat"
+              value={vaccineObs}
+              onChangeText={setVaccineObs}
+            />
           </Dialog.Content>
           <Dialog.Actions>
             <Button
@@ -550,6 +587,7 @@ export default function details({route, navigation}) {
                       costumer_id: user.id,
                       animal_id: pet.id,
                       date,
+                      obs: vaccineObs,
                       vaccines: multiVaccineStringReturn(vaccinesSelected),
                     }),
                   );
@@ -560,6 +598,7 @@ export default function details({route, navigation}) {
                       costumer_id: user.id,
                       animal_id: pet.id,
                       date,
+                      obs: vaccineObs,
                       vaccines: multiVaccineStringReturn(vaccinesSelected),
                     }),
                   );
@@ -567,6 +606,7 @@ export default function details({route, navigation}) {
                 dispatch(PetsActions.setDatePickerVisible(false));
                 setActiveVaccine(null);
                 setDate('');
+                setVaccineObs('');
                 setVaccinesSeleted([]);
                 setBackdropVisible(false);
                 dispatch(PetsActions.setAlertDialogVisible());
@@ -649,9 +689,7 @@ export default function details({route, navigation}) {
         }}
         overlayColor="rgba(0,0,0,0.32)"
         backdropStyle={{
-          backgroundColor: '#fff',
-          minHeight:
-            Dimensions.get('window').height / (backdropType === 'menu' ? 4 : 2),
+          backgroundColor: '#fff'
         }}>
         {backdropType === 'menu' && (
           <BottomSheetMenuContent
@@ -665,6 +703,12 @@ export default function details({route, navigation}) {
             appointment={activeAppointment}
             handleClose={handleBackdrop}
             location="pet"
+          />
+        )}
+        {backdropType === 'scheduleVaccine' && (
+          <BottomSheetVaccinesFormContent
+            pet={pet}
+            handleClose={handleBackdrop}
           />
         )}
       </Backdrop>

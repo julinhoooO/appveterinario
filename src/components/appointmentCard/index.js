@@ -90,6 +90,7 @@ export default function appointmentCard({data, onIconButtonPress}) {
                   paddingRight={data.obs ? 90 : 0}
                   paddingBottom={data.obs ? 30 : 0}>
                   <Subheading>{data.obs ? data.obs : ''}</Subheading>
+                  {data.vaccines && <Subheading>{data.vaccines.slice(0, -1)}</Subheading>}
                 </Content>
               </AppointmentDescription>
             </AppointmentCardContent>
@@ -108,7 +109,7 @@ export default function appointmentCard({data, onIconButtonPress}) {
               opacity: 0.5,
             }}
           />
-        ) : (
+        ) : data.type_id === 'appointment' ? (
           <Avatar.Icon
             size={304}
             color="black"
@@ -121,7 +122,18 @@ export default function appointmentCard({data, onIconButtonPress}) {
               opacity: 0.1,
             }}
           />
-        )}
+        ) : (<Avatar.Icon
+          size={304}
+          color="black"
+          icon="needle"
+          style={{
+            backgroundColor: 'transparent',
+            position: 'absolute',
+            right: -80,
+            bottom: -90,
+            opacity: 0.1,
+          }}
+        />)}
       </AppointmentCard>
     </>
   );

@@ -15,7 +15,8 @@ function NotificationHeader() {
   return (
     <Appbar
       style={{
-        backgroundColor: 'transparent',
+        zIndex: 1001,
+        backgroundColor: '#f1f1f1',
       }}>
       <Appbar.Content title="Notificações" />
       <Appbar.Action
@@ -37,6 +38,7 @@ function Main({navigation, notificationsState}) {
   );
   return (
     <Container>
+      <NotificationHeader />
       <Appointments
         data={notifications}
         renderItem={({item}) => (
@@ -48,7 +50,6 @@ function Main({navigation, notificationsState}) {
             : Math.round(Math.random() * 100000).toString()
         }
         ListFooterComponent={<Footer />}
-        ListHeaderComponent={<NotificationHeader />}
         onRefresh={async () => {
           setRefreshing(true);
           await dispatch(NotificationActions.reloadNotifications());

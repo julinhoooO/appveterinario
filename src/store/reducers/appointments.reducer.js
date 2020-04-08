@@ -7,6 +7,7 @@ const initialState = {
   dropdown: {
     costumers: [],
     animals: [],
+    types: [],
   },
   datepickerVisible: false,
   alertDialogVisible: false,
@@ -29,6 +30,14 @@ const appointmentsReducer = function(state = initialState, action) {
       };
     }
     case Actions.CREATE_APPOINTMENT: {
+      return {
+        ...state,
+        appointments: action.payload,
+        appointment: action.appointment,
+        message: action.message,
+      };
+    }
+    case Actions.EDIT_VACCINE: {
       return {
         ...state,
         appointments: action.payload,

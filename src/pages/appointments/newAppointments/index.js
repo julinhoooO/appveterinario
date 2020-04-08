@@ -1,5 +1,5 @@
 import React, {useState, useRef, useCallback, useEffect} from 'react';
-import {Keyboard} from 'react-native';
+import {Keyboard, View} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {TextInputMask} from 'react-native-masked-text';
@@ -14,7 +14,7 @@ import * as AppointmentsActions from '~/store/actions/appointments.actions';
 
 import {
   FAB,
-  RadioButton,
+  Chip,
   HelperText,
   Switch,
   TouchableRipple,
@@ -30,30 +30,27 @@ import {
   FormTextInput,
   SectionFormTitle,
   GroupInputForm,
-  FormRow,
   Select,
-  FormText,
   FormDivider,
-  RowAlignedView,
-  PetAvatarFrame,
-  PetAvatar,
-  PetAvatarFrameRipple,
 } from './styles';
 
 import Header from '~/components/header';
 
-export default function newPets({navigation, route}) {
+export default function newAppointments({navigation, route}) {
   const dispatch = useDispatch();
   const {dropdown, activeFilterDate} = useSelector(state => state.appointments);
+  const {vaccines}  = useSelector(state => state.pets.dropdown);
   async function createAppointment() {
     Keyboard.dismiss();
     setLoadingFabButton(true);
     await dispatch(
       AppointmentsActions.createAppointment({
+        type_id,
         costumer_id,
         animal_id,
         date,
         time,
+        vaccines: multiVaccineStringReturn(vaccinesSelected),
         activeFilterDate,
       }),
     );
@@ -61,8 +58,10 @@ export default function newPets({navigation, route}) {
     setLoadingFabButton(false);
     setSuccess(true);
     setDialogVisible(true);
+    setVaccinesSeleted([]);
   }
   //UseState
+  const [type_id, setTypeId] = useState('');
   const [costumer_id, setCostumerId] = useState('');
   const [animal_id, setAnimalId] = useState('');
   const [date, setDate] = useState('');
@@ -72,13 +71,14 @@ export default function newPets({navigation, route}) {
   const [fabButtonVisible, setFabButtonVisible] = useState(true);
   const [dialogVisible, setDialogVisible] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [vaccinesSelected, setVaccinesSeleted] = useState([]);
 
   //UseRef
   const refCostumer = useRef(null);
   const refPet = useRef(null);
   const refDate = useRef(null);
   const refTime = useRef(null);
-  const refType = useRef(null);
+  const refAppointmentType = useRef(null);
 
   function keyboardDidShow() {
     setFabButtonVisible(false);
@@ -119,6 +119,25 @@ export default function newPets({navigation, route}) {
       };
     }, []),
   );
+  function multiVaccineHandle(id, index) {
+    if (index) {
+      const selectVaccine = vaccines.filter(vaccine => vaccine.id === id)[0];
+      setVaccinesSeleted([...vaccinesSelected, selectVaccine]);
+      multiVaccineStringReturn(vaccinesSelected);
+    }
+  }
+  function multiVaccineStringReturn(vaccines) {
+    let str = '';
+    vaccines.map((vaccine, index) => {
+      str += `${vaccine.name}${vaccines.length > index ? ', ' : ''}`;
+      return str;
+    });
+    return str;
+  }
+  function deselectVaccine(id) {
+    const selectVaccine = vaccinesSelected.filter(vaccine => vaccine.id !== id);
+    setVaccinesSeleted(selectVaccine);
+  }
   return (
     <>
       <Header navigation={navigation} title={`Agendar nova consulta`} />
@@ -126,6 +145,19 @@ export default function newPets({navigation, route}) {
         <Form showsVerticalScrollIndicator={false}>
           <SectionFormTitle>Dados da Consulta</SectionFormTitle>
           <GroupInputForm paddingLeft={12}>
+            <Select
+              selectedValue={type_id}
+              onValueChange={(itemValue, itemIndex) => {
+                setTypeId(itemValue);
+              }}
+              ref={refAppointmentType}
+              prompt="Tipo"
+              mode="dropdown">
+              <Select.Item label="Selecione o tipo da consulta" value="" />
+              <Select.Item label="Consulta" value="appointment" />
+              <Select.Item label="Vacinação" value="vaccine" />
+            </Select>
+            <FormDivider />
             <Select
               selectedValue={costumer_id}
               onValueChange={(itemValue, itemIndex) => {
@@ -147,9 +179,12 @@ export default function newPets({navigation, route}) {
               <>
                 <Select
                   selectedValue={animal_id}
-                  onValueChange={(itemValue, itemIndex) =>
-                    setAnimalId(itemValue)
-                  }
+                  onValueChange={(itemValue, itemIndex) => {
+                    setAnimalId(itemValue);
+                    if(itemValue){
+                      dispatch(PetsActions.getVacinesDropdown({pet: itemValue}));
+                    }
+                  }}
                   ref={refPet}
                   prompt="Animal"
                   mode="dropdown">
@@ -166,6 +201,42 @@ export default function newPets({navigation, route}) {
             ) : (
               <></>
             )}
+            <>
+            {type_id === 'vaccine' && animal_id && vaccines.length ? (
+              <>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    paddingVertical: 20,
+                  }}>
+                  {vaccinesSelected.map(vaccine => (
+                    <Chip
+                      style={{marginRight: 10}}
+                      onClose={() => deselectVaccine(vaccine.id)}>
+                      {vaccine.name}
+                    </Chip>
+                  ))}
+                </View>
+                <Select
+                selectedValue=""
+                onValueChange={(itemValue, itemIndex) => {
+                    multiVaccineHandle(itemValue, itemIndex);
+                }}
+                prompt="Vacinas"
+                mode="dropdown">
+                <Select.Item label="Selecione uma vacina" value="" />
+                {vaccines &&
+                    vaccines.map(item => (
+                    <Select.Item
+                        key={item.name}
+                        label={item.name}
+                        value={item.id}
+                    />
+                    ))}
+                </Select>
+              </>
+            ) : <></>}
+            </>
             <FormTextInput
               label="Data da consulta"
               mode="flat"
@@ -203,6 +274,7 @@ export default function newPets({navigation, route}) {
                 />
               )}
             />
+            
           </GroupInputForm>
           <InvisibleMargedDivider marginTop={24} />
         </Form>

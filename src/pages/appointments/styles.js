@@ -6,11 +6,10 @@ export const Container = styled.View`
   min-height: 100%;
 `;
 export const Appointments = styled.FlatList`
-  min-height: 100%;
 `;
 export const Footer = styled.View`
   width: 100%;
-  height: 54px;
+  height: 154px;
   background-color: transparent;
 `;
 export const FormTextInput = styled(TextInput)`

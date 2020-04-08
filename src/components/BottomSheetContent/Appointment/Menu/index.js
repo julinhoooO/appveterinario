@@ -32,7 +32,7 @@ export default function BottomSheetMenuContent({
       }}>
       {appointment && !appointment.completed && (
         <List.Item
-          title="Reagendar Consulta"
+          title={`Reagendar ${appointment && appointment.type_id === "vaccine" ? "Vacinação" : "Consulta"}`}
           onPress={() => setBackdropType('reschedule')}
           left={props => <List.Icon {...props} icon="calendar-clock" />}
         />
@@ -59,7 +59,7 @@ export default function BottomSheetMenuContent({
       <List.Item
         title={`${
           appointment && !appointment.completed ? 'Desmarcar' : 'Excluir'
-        } Consulta`}
+        } ${appointment && appointment.type_id === "vaccine" ? "Vacinação" : "Consulta"}`}
         onPress={() => {
           setDialogType(
             appointment && !appointment.completed ? 'unschedule' : 'delete',
@@ -68,6 +68,12 @@ export default function BottomSheetMenuContent({
         }}
         left={props => <List.Icon {...props} icon="calendar-minus" />}
       />
+      {appointment && appointment.type_id === "vaccine" && !appointment.completed && (
+      <List.Item
+        title="Alterar Vacinas"
+        onPress={() => setBackdropType('editVaccine')}
+        left={props => <List.Icon {...props} icon="needle" />}
+      />)}
       <Portal>
         <Dialog visible={alertVisible} onDismiss={() => setAlertVisible(false)}>
           <Dialog.Content
@@ -143,7 +149,7 @@ export default function BottomSheetMenuContent({
                       activeFilterDate,
                     }),
                   );
-                } else if (dialogType === 'delete') {
+                } else if (dialogType === 'delete' || dialogType === 'unschedule') {
                   await dispatch(
                     AppointmentsActions.deleteAppointment({
                       id: appointment ? appointment.id : '',

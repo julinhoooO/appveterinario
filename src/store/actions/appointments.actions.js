@@ -13,6 +13,7 @@ export const GET_APPOINTMENT = `[${ACTION_ID}] GET APPOINTMENT`;
 export const GET_APPOINTMENTS = `[${ACTION_ID}] GET APPOINTMENTS`;
 export const CREATE_APPOINTMENT = `[${ACTION_ID}] CREATE APPOINTMENT`;
 export const EDIT_APPOINTMENT = `[${ACTION_ID}] EDIT APPOINTMENT`;
+export const GET_TYPES_DROPDOWN = `[${ACTION_ID}] GET TYPES DROPDOWN`;
 export const GET_COSTUMERS_DROPDOWN = `[${ACTION_ID}] GET COSTUMERS DROPDOWN`;
 export const GET_ANIMALS_DROPDOWN = `[${ACTION_ID}] GET ANIMALS DROPDOWN`;
 export const DELETE_APPOINTMENT = `[${ACTION_ID}] DELETE APPOINTMENT`;
@@ -20,6 +21,7 @@ export const SAGA_GET_APPOINTMENT = `[${ACTION_ID}] SAGA GET APPOINTMENT`;
 export const SAGA_GET_APPOINTMENTS = `[${ACTION_ID}] SAGA GET APPOINTMENTS`;
 export const SAGA_CREATE_APPOINTMENT = `[${ACTION_ID}] SAGA CREATE APPOINTMENT`;
 export const SAGA_EDIT_APPOINTMENT = `[${ACTION_ID}] SAGA EDIT APPOINTMENT`;
+export const SAGA_GET_TYPES_DROPDOWN = `[${ACTION_ID}] SAGA GET TYPES DROPDOWN`;
 export const SAGA_GET_COSTUMERS_DROPDOWN = `[${ACTION_ID}] SAGA GET COSTUMERS DROPDOWN`;
 export const SAGA_GET_ANIMALS_DROPDOWN = `[${ACTION_ID}] SAGA GET ANIMALS DROPDOWN`;
 export const SAGA_DELETE_APPOINTMENT = `[${ACTION_ID}] SAGA DELETE APPOINTMENT`;
@@ -33,6 +35,8 @@ export const SAGA_COMPLETED_APPOINTMENT = `[${ACTION_ID}] SAGA COMPLETED APPOINT
 export const SET_FILTER_DATE = `[${ACTION_ID}] SET FILTER DATE`;
 export const SET_ALERT_DIALOG_VISIBLE = `[${ACTION_ID}] SET ALERT DIALOG VISIBLE`;
 export const SET_CONFIRM_DELETE_DIALOG_VISIBLE = `[${ACTION_ID}] SET CONFIRM DELETE DIALOG VISIBLE`;
+export const EDIT_VACCINE = `[${ACTION_ID}] EDIT VACCINE`;
+export const SAGA_EDIT_VACCINE = `[${ACTION_ID}] SAGA EDIT VACCINE`;
 
 export function getAppointment(id) {
   return {
@@ -89,7 +93,12 @@ export function completedAppointment(id) {
     payload: id,
   };
 }
-
+export function getTypesDropdown(data) {
+  return {
+    type: SAGA_GET_TYPES_DROPDOWN,
+    payload: data,
+  };
+}
 export function getCostumersDropdown(data) {
   return {
     type: SAGA_GET_COSTUMERS_DROPDOWN,
@@ -123,4 +132,11 @@ export function setConfirmDeleteDialogVisible() {
   return {
     type: SET_CONFIRM_DELETE_DIALOG_VISIBLE,
   };
+}
+
+export function editVaccine(data){
+  return {
+    type: SAGA_EDIT_VACCINE,
+    payload: data
+  }
 }

@@ -6,6 +6,7 @@ import {Menu} from 'react-native-paper';
 export default function AppHeader({
   navigation,
   backProps = null,
+  content = null,
   title,
   menuItems,
 }) {
@@ -24,7 +25,7 @@ export default function AppHeader({
             }
           }}
         />
-        <Header.Content title={title ? title : ''} />
+        {content ? content : <Header.Content title={title ? title : ''} />}
         {menuItems && menuItems.length && (
           <Menu
             visible={menuVisible}

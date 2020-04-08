@@ -13,6 +13,7 @@ import {
   SAGA_FILTER_COSTUMERS,
   DELETE_COSTUMER,
   SAGA_DELETE_COSTUMER,
+  SET_SHIMMER_VISIBLE,
 } from '~/store/actions/users.actions';
 
 import {
@@ -49,9 +50,11 @@ import {
   SAGA_CREATE_APPOINTMENT,
   EDIT_APPOINTMENT,
   SAGA_EDIT_APPOINTMENT,
+  GET_TYPES_DROPDOWN,
+  SAGA_GET_TYPES_DROPDOWN,
   GET_COSTUMERS_DROPDOWN,
-  GET_ANIMALS_DROPDOWN,
   SAGA_GET_COSTUMERS_DROPDOWN,
+  GET_ANIMALS_DROPDOWN,
   SAGA_GET_ANIMALS_DROPDOWN,
   DELETE_APPOINTMENT,
   SAGA_DELETE_APPOINTMENT,
@@ -61,6 +64,8 @@ import {
   SAGA_APPOINTMENT_OBSERVATION,
   COMPLETED_APPOINTMENT,
   SAGA_COMPLETED_APPOINTMENT,
+  EDIT_VACCINE,
+  SAGA_EDIT_VACCINE
 } from '~/store/actions/appointments.actions';
 
 import {
@@ -309,6 +314,25 @@ function* saveAppointment(action) {
     );
     yield put({
       type: EDIT_APPOINTMENT,
+      payload: response.data.appointments,
+      appointment: response.data.appointment,
+      message: response.data.message,
+    });
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function* editVaccine(action) {
+  try {
+    const response = yield call(
+      apiFetchData,
+      'put',
+      'appointments/vaccine/edit',
+      action.payload,
+    );
+    yield put({
+      type: EDIT_VACCINE,
       payload: response.data.appointments,
       appointment: response.data.appointment,
       message: response.data.message,
@@ -710,6 +734,7 @@ export default function* rootSaga() {
   yield takeLatest(SAGA_GET_APPOINTMENTS, getAppointments);
   yield takeLatest(SAGA_CREATE_APPOINTMENT, createAppointment);
   yield takeLatest(SAGA_EDIT_APPOINTMENT, saveAppointment);
+  yield takeLatest(SAGA_EDIT_VACCINE, editVaccine);
   yield takeLatest(SAGA_DELETE_APPOINTMENT, deleteAppointment);
   yield takeLatest(SAGA_COMPLETED_APPOINTMENT, completedAppointment);
   yield takeLatest(SAGA_RESCHEDULE_APPOINTMENT, rescheduleAppointment);

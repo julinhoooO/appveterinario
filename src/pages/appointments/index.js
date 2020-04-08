@@ -1,46 +1,31 @@
-import React, {useCallback, useState, useEffect, useRef} from 'react';
-import {View, Dimensions, Vibration} from 'react-native';
-import {connect, useDispatch, useSelector} from 'react-redux';
+import React, {useCallback, useState, useEffect} from 'react';
+import {Vibration} from 'react-native';
+import {connect, useDispatch} from 'react-redux';
 import LottieView from 'lottie-react-native';
 import {
   FAB,
   Portal,
-  Appbar,
   Dialog,
   Button,
-  Paragraph,
+  Paragraph
 } from 'react-native-paper';
 import {TextInputMask} from 'react-native-masked-text';
 import {Container, Appointments, Footer, FormTextInput} from './styles';
 import AppointmentCard from '~/components/appointmentCard';
+import AppointmentHeader from '~/components/appointmentHeader';
 import {Backdrop} from 'react-native-backdrop';
 
 //BackdropContent
 import BottomSheetMenuContent from '~/components/BottomSheetContent/Appointment/Menu';
 import BottomSheetRescheduleContent from '~/components/BottomSheetContent/Appointment/Reschedule';
 import BottomSheetObservationContent from '~/components/BottomSheetContent/Appointment/Observation';
+import BottomSheetVacinationContent from '~/components/BottomSheetContent/Vaccines/Form';
 
 import {useFocusEffect} from '@react-navigation/native';
 
 import * as NavigationActions from '~/store/actions/navigation.actions';
 import * as AppointmentsActions from '~/store/actions/appointments.actions';
 import * as NotificationActions from '~/store/actions/notifications.actions';
-
-function AppointmentHeader({date}) {
-  const dispatch = useDispatch();
-  return (
-    <Appbar
-      style={{
-        backgroundColor: 'transparent',
-      }}>
-      <Appbar.Content title={`Consultas agendadas${date ? ' ' + date : ''}`} />
-      <Appbar.Action
-        icon="calendar-search"
-        onPress={() => dispatch(AppointmentsActions.setDatePickerVisible(true))}
-      />
-    </Appbar>
-  );
-}
 
 function Main({navigation, appointmentsState, notificationsState}) {
   const dispatch = useDispatch();
@@ -76,6 +61,7 @@ function Main({navigation, appointmentsState, notificationsState}) {
   return (
     <>
       <Container>
+        <AppointmentHeader date={activeFilterDate} />
         <Appointments
           data={appointments}
           renderItem={({item}) => (
@@ -94,7 +80,6 @@ function Main({navigation, appointmentsState, notificationsState}) {
               : Math.round(Math.random() * 100000).toString()
           }
           ListFooterComponent={<Footer />}
-          ListHeaderComponent={<AppointmentHeader date={activeFilterDate} />}
           onRefresh={async () => {
             setRefreshing(true);
             await dispatch(
@@ -135,7 +120,6 @@ function Main({navigation, appointmentsState, notificationsState}) {
           overlayColor="rgba(0,0,0,0.32)"
           backdropStyle={{
             backgroundColor: '#fff',
-            minHeight: Dimensions.get('window').height / 2,
           }}>
           {backdropType === 'menu' && (
             <BottomSheetMenuContent
@@ -152,6 +136,13 @@ function Main({navigation, appointmentsState, notificationsState}) {
           )}
           {backdropType === 'observation' && (
             <BottomSheetObservationContent
+              appointment={activeAppointment}
+              handleClose={handleBackdrop}
+            />
+          )}
+          {backdropType === 'editVaccine' && (
+            <BottomSheetVacinationContent
+              edit
               appointment={activeAppointment}
               handleClose={handleBackdrop}
             />

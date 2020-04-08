@@ -36,7 +36,6 @@ export default function details({route, navigation}) {
   useEffect(() => {
     if (!user.id) {
       if (route.params) {
-        console.log(route.params);
         dispatch(UsersActions.getCostumer(route.params.id));
       }
     }
@@ -112,30 +111,32 @@ export default function details({route, navigation}) {
             left={props => (
               <List.Icon {...props} icon="account-card-details-outline" />
             )}>
-            {user.street && user.city && user.state ? (
+            {!user.cpf && !user.rg ? (
+              <AccordionItem title="Sem dados de pessoais =(" />
+            ) : (
               <>
                 {user.cpf && (
                   <AccordionItem
-                    title={user.cpf}
+                    title={`CPF: ${user.cpf}`}
                     left={props => <List.Icon {...props} icon="book-open" />}
                   />
                 )}
                 {user.rg && (
                   <AccordionItem
-                    title={user.rg}
+                    title={`RG: ${user.rg}`}
                     left={props => <List.Icon {...props} icon="book-open" />}
                   />
                 )}
               </>
-            ) : (
-              <AccordionItem title="Sem dados de pessoais =(" />
             )}
           </AccordionSection>
           <AccordionSection
             id={3}
             title="Endereço"
             left={props => <List.Icon {...props} icon="map-marker-outline" />}>
-            {user.street && user.city && user.state ? (
+            {!user.street && !user.city && !user.state ? (
+              <AccordionItem title="Sem dados de endereço =(" />
+            ) : (
               <>
                 {user.street && (
                   <AccordionItem
@@ -149,19 +150,17 @@ export default function details({route, navigation}) {
                   <AccordionItem
                     title={user.city}
                     left={props => (
-                      <List.Icon {...props} icon="city-variant-outline" />
+                      <List.Icon {...props} icon="home-group" />
                     )}
                   />
                 )}
                 {user.state && (
                   <AccordionItem
                     title={user.state}
-                    left={props => <List.Icon {...props} icon="book-open" />}
+                    left={props => <List.Icon {...props} icon="city-variant-outline" />}
                   />
                 )}
               </>
-            ) : (
-              <AccordionItem title="Sem dados de endereço =(" />
             )}
           </AccordionSection>
           <AccordionSection

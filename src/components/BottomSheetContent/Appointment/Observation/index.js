@@ -18,9 +18,11 @@ export default function BottomSheetObservationContent({
       style={{
         backgroundColor: '#FFF',
         justifyContent: 'space-between',
-        height: Dimensions.get('window').height / 2,
       }}>
-      <View>
+      <View
+        style={{
+          marginBottom: 30
+      }}>
         <View
           style={{
             flexDirection: 'column',
@@ -59,7 +61,6 @@ export default function BottomSheetObservationContent({
             }),
           );
           if (location === 'pet') {
-            console.log(location);
             dispatch(PetsActions.getPet(appointment.pet.id));
           }
           handleClose();

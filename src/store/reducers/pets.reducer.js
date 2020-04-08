@@ -5,9 +5,9 @@ const initialState = {
   pet: {},
   message: '',
   dropdown: {
-    species: [{}],
-    races: [{}],
-    vaccines: [{}],
+    species: [],
+    races: [],
+    vaccines: [],
   },
   successVisible: false,
   confirmationVisible: false,

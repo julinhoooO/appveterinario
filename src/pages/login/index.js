@@ -1,16 +1,25 @@
-import React, {useState, useEffect} from 'react';
-import {Alert, Animated, Keyboard} from 'react-native';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
+import {
+  Alert,
+  Animated,
+  Keyboard,
+  BackHandler,
+  ToastAndroid,
+} from 'react-native';
 import api from '~/services/api';
 import LottieView from 'lottie-react-native';
+import {useFocusEffect} from '@react-navigation/native';
 
 import {
   Container,
   InnerContainer,
-  Logo,
-  TextInput,
+  FormTextContainer,
+  FormTextInput,
   LoginButton,
   LoginButtonText,
 } from './styles';
+
+import {IconButton} from 'react-native-paper';
 
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -22,6 +31,37 @@ export default function login({navigation}) {
   const [loading, setLoading] = useState(false);
   const scaleTransform = new Animated.Value(1);
   const fontOpacity = new Animated.Value(1);
+
+  //UseRef
+  const refUsername = useRef(null);
+  const refPassword = useRef(null);
+  useFocusEffect(
+    useCallback(() => {
+      let exit = false;
+      const onBackPress = () => {
+        if (exit) {
+          BackHandler.exitApp();
+        }
+        if (!exit) {
+          ToastAndroid.showWithGravityAndOffset(
+            'Pressione voltar novamente para sair',
+            ToastAndroid.SHORT,
+            ToastAndroid.BOTTOM,
+            25,
+            50,
+          );
+        }
+        exit = true;
+        setTimeout(() => {
+          exit = false;
+        }, 3000);
+        return true;
+      };
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, []),
+  );
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
@@ -99,22 +139,42 @@ export default function login({navigation}) {
       </InnerContainer>
       {!loading ? (
         <InnerContainer>
-          <TextInput
+          <FormTextInput
+            label="Usuário"
+            mode="flat"
             value={username}
-            placeholder="Usuário"
             onChangeText={text => setUsername(text)}
             autoCapitalize="none"
             autoCorrect={false}
             autoCompleteType="off"
+            ref={refUsername}
+            returnKeyType="next"
+            onSubmitEditing={() => refPassword.current.focus()}
           />
-          <TextInput
-            value={password}
-            placeholder="Senha"
-            onChangeText={text => setPassword(text)}
-            secureTextEntry={!visiblePassword}
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
+          <FormTextContainer>
+            <FormTextInput
+              label="Senha"
+              mode="flat"
+              value={password}
+              onChangeText={text => setPassword(text)}
+              secureTextEntry={!visiblePassword}
+              autoCapitalize="none"
+              autoCorrect={false}
+              ref={refPassword}
+              returnKeyType="done"
+              onSubmitEditing={() => login()}
+            />
+            <IconButton
+              style={{
+                position: 'absolute',
+                top: 10,
+                right: 10,
+              }}
+              color="#999"
+              icon={!visiblePassword ? 'eye' : 'eye-off'}
+              onPress={() => setVisiblePassword(!visiblePassword)}
+            />
+          </FormTextContainer>
           <LoginButton rippleColor="#FFF" underlayColor="#FFF" onPress={login}>
             <LoginButtonText>Entrar</LoginButtonText>
           </LoginButton>

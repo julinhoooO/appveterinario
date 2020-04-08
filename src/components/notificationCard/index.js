@@ -30,7 +30,6 @@ export default function notificationCard({navigation, data}) {
     }
     return Math.round(diff) + message;
   }
-  console.log(data);
   return (
     <NotificationCard read={data.read}>
       <NotificationCardTitle

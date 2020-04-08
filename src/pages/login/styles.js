@@ -1,10 +1,10 @@
 import styled from 'styled-components/native';
-import {TouchableRipple} from 'react-native-paper';
+import {TouchableRipple, TextInput} from 'react-native-paper';
 import {Dimensions} from 'react-native';
 
 export const Container = styled.View`
   flex: 1;
-  background-color: #fff;
+  background-color: #f1f1f1;
   padding: 30px 0;
 `;
 
@@ -21,14 +21,14 @@ export const InnerContainer = styled.View`
 
 export const Logo = styled.Image``;
 
-export const TextInput = styled.TextInput`
+export const FormTextInput = styled(TextInput)`
+  background-color: #e4e4e4;
   width: 100%;
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 4px;
-  background-color: #eee;
-  color: #555;
-  font-size: 14px;
+  margin-bottom: 10px;
+`;
+
+export const FormTextContainer = styled.View`
+  width: 100%;
 `;
 
 export const LoginButton = styled(TouchableRipple)`

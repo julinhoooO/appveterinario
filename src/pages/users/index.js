@@ -1,8 +1,7 @@
 import React, {useEffect, useCallback, useState} from 'react';
 import {connect, useDispatch} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {Animated} from 'react-native';
-import {FAB, Avatar} from 'react-native-paper';
+import {FAB} from 'react-native-paper';
 import {Container, ListContainer, ListItem, ListIcon} from './styles';
 import SearchHeader from '~/components/searchHeader';
 
@@ -35,6 +34,7 @@ function Users({
   );
   return (
     <Container>
+      <SearchHeader onChangeText={filterCostumers} />
       <ListContainer
         onRefresh={async () => {
           setRefreshing(true);
@@ -43,14 +43,13 @@ function Users({
         }}
         refreshing={refreshing}
         data={users.data}
-        ListHeaderComponent={<SearchHeader onChangeText={filterCostumers} />}
         renderItem={({item}) => (
           <ListItem
             key={item.id}
             title={item.name}
-            description={item.pets.map((pet, index) => {
-              return `${pet.name}${index < item.pets.length ? ', ' : ''}`;
-            })}
+            description={item.pets.map((pet) => {
+              return `${pet.name},`;
+            }).slice(0, 1)}
             left={props => <ListIcon {...props} icon="account-details" />}
             onPress={() => {
               getCostumer(item.id);
@@ -64,7 +63,7 @@ function Users({
         style={{
           position: 'absolute',
           right: 0,
-          bottom: 0,
+          bottom: 50,
           margin: 16,
           justifyContent: 'center',
           alignItems: 'center',

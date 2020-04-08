@@ -116,7 +116,6 @@ export function deleteVacine(data) {
   };
 }
 export function getVacinesDropdown(specie) {
-  console.log(specie);
   return {
     type: SAGA_GET_VACINES_DROPDOWN,
     payload: specie,
